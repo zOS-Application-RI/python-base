@@ -1,4 +1,4 @@
-name: Nexus3 to Docker Hub
+name: Python Base to Docker Hub
 
 on:
   push:
