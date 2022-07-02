@@ -30,18 +30,41 @@ RUN echo "install_weak_deps=False" >> /etc/dnf/dnf.conf \
 
 RUN if [[ "$CONTAINER_IMAGE" =~ "centos" ]] ; then \
     dnf update -y ; \
-    dnf install -y epel-release dnf-plugins-core ; \
+    dnf install -y dnf-plugins-core ; \
     dnf config-manager --set-disabled epel ; \
+    sudo dnf install -y \
+    https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm \
+    https://dl.fedoraproject.org/pub/epel/epel-next-release-latest-9.noarch.rpm && \
+#    dnf config-manager --set-disabled epel ; \
     dnf config-manager --set-enabled powertools ; \
-    dnf module enable -y python310-devel ; \
+    dnf module enable -y python39-devel ; \
     dnf clean all ; \
     rm -rf /var/cache/{dnf,yum} ; \
     rm -rf /var/lib/dnf/history.* ; \
     rm -rf /var/log/* ; \
   fi
 
-RUN dnf update -y \
-  && dnf install -y glibc-langpack-en python3-pip \
+RUN dnf -y update && dnf install -y 'dnf-command(config-manager)' && \
+  dnf config-manager --set-enabled crb && \
+  dnf install -y \
+#  acl \
+#  cargo \
+#  gcc \
+#  gcc-c++ \
+  glibc-langpack-en \
+  krb5-devel \
+  krb5-workstation \
+#  libffi-devel \
+#  libtool-ltdl-devel \
+  python3-devel \
+  python3-gssapi \  
+  python3-pip \
+#  python3-psycopg2 \
+#  python3-setuptools \  
+#  xmlsec1-openssl \
+#  xmlsec1-devel \
+#  xmlsec1-openssl-devel \
+  && dnf config-manager --set-disabled crb \
   && dnf clean all \
   && rm -rf /var/cache/{dnf,yum} \
   && rm -rf /var/lib/dnf/history.* \
@@ -49,71 +72,76 @@ RUN dnf update -y \
 
 # NOTE(pabelanger): We do this to allow users to install python36 but not
 # change python3 to python36.
-#RUN alternatives --set python3 /usr/bin/python3.10
+#RUN alternatives --set python3 /usr/bin/python3.9
 
 # Upgrade pip to fix wheel cache for locally built wheels.
 # See https://github.com/pypa/pip/issues/6852
-RUN python3 -m pip install --no-cache-dir -U pip
+RUN python3 -m pip install --no-cache-dir -U pip \
+    && python3 -m pip install --no-cache-dir -U pip setuptools \
+    && python3 -m pip install --no-cache-dir -U pip setuptools-rust
 
 RUN dnf update -y \
   && dnf install -y gcc \
   && pip3 install dumb-init --no-cache-dir -c constraints.txt \
   && dnf remove -y gcc \
-  # && dnf clean all \
+  && dnf clean all \
   && rm -rf /var/cache/{dnf,yum} \
   && rm -rf /var/lib/dnf/history.* \
   && rm -rf /var/log/*
 # Install runtime requirements
-RUN dnf -y update && dnf install -y 'dnf-command(config-manager)' && \
-    dnf config-manager --set-enabled crb && \
-    dnf -y install acl \
-    git-core \
-    git-lfs \
-    glibc-langpack-en \
-    krb5-workstation \
-    nginx \
-    postgresql \
-    python3-devel \
-    python3-libselinux \
-    python3-pip \
-    python3-psycopg2 \
-    python3-setuptools \
-    rsync \
-    "rsyslog >= 8.1911.0" \
-    subversion \
-    sudo \
-    vim-minimal \
-    which \
-    unzip \
-    xmlsec1-openssl && \
-    dnf -y clean all
-RUN dnf -y update && dnf install -y 'dnf-command(config-manager)' && \
-    dnf config-manager --set-enabled crb && \
-    dnf -y install \
-    cargo \
-    gcc \
-    gcc-c++ \
-    git-core \
-    gettext \
-    glibc-langpack-en \
-	krb5-devel \
-    libffi-devel \
-    libtool-ltdl-devel \
-    make \
-    nss \
-    openssl-devel \
-    openldap-devel \
-    patch \
-    python3-devel \
-	python3-gssapi \
-    python3-pip \
-    python3-psycopg2 \
-    python3-setuptools \
-    swig \
-    unzip \
-    xmlsec1-devel \
-    xmlsec1-openssl-devel
-RUN pip3 install -U pip && python3 -m pip install -U pip setuptools && python3 -m pip install -U pip setuptools-rust
+# RUN dnf -y update && dnf install -y 'dnf-command(config-manager)' && \
+#     dnf config-manager --set-enabled crb && \
+#     dnf -y install acl \
+#     git-core \
+#     git-lfs \
+#     glibc-langpack-en \
+#     krb5-workstation \
+#     nginx \
+#     postgresql \
+#     python3-devel \
+#     python3-libselinux \
+#     python3-pip \
+#     python3-psycopg2 \
+#     python3-setuptools \
+#     rsync \
+#     "rsyslog >= 8.1911.0" \
+#     subversion \
+#     sudo \
+#     vim-minimal \
+#     which \
+#     unzip \
+#     xmlsec1-openssl \
+#     xmlsec1-devel \
+#     xmlsec1-openssl-devel && \
+#     dnf -y clean all
+
+# RUN dnf -y update && dnf install -y 'dnf-command(config-manager)' && \
+#     dnf config-manager --set-enabled crb && \
+#     dnf -y install \
+#     cargo \
+#     gcc \
+#     gcc-c++ \
+#     git-core \
+#     gettext \
+#     glibc-langpack-en \
+#   	krb5-devel \
+#     libffi-devel \
+#     libtool-ltdl-devel \
+#     make \
+#     nss \
+#     openssl-devel \
+#     openldap-devel \
+#     patch \
+#     python3-devel \
+# 	  python3-gssapi \
+#     python3-pip \
+#     python3-psycopg2 \
+#     python3-setuptools \
+#     swig \
+#     unzip \
+#     xmlsec1-devel \
+#     xmlsec1-openssl-devel
+# RUN pip3 install -U pip && python3 -m pip install -U pip setuptools && python3 -m pip install -U pip setuptools-rust
 
 WORKDIR /
 RUN rm -rf $REMOTE_SOURCE_DIR
