@@ -65,15 +65,10 @@ RUN dnf -y update && dnf install -y 'dnf-command(config-manager)' && \
 #  xmlsec1-devel \
 #  xmlsec1-openssl-devel \
   && dnf install -y --allowerasing libcurl libcurl-devel openssl-devel libxml2 libxml2-devel \
-  # && dnf config-manager --set-disabled crb \
   && dnf clean all \
   && rm -rf /var/cache/{dnf,yum} \
   && rm -rf /var/lib/dnf/history.* \
   && rm -rf /var/log/*
-
-# NOTE(pabelanger): We do this to allow users to install python36 but not
-# change python3 to python36.
-#RUN alternatives --set python3 /usr/bin/python3.9
 
 # Upgrade pip to fix wheel cache for locally built wheels.
 # See https://github.com/pypa/pip/issues/6852
@@ -89,60 +84,6 @@ RUN dnf update -y \
   && rm -rf /var/cache/{dnf,yum} \
   && rm -rf /var/lib/dnf/history.* \
   && rm -rf /var/log/*
-# Install runtime requirements
-# RUN dnf -y update && dnf install -y 'dnf-command(config-manager)' && \
-#     dnf config-manager --set-enabled crb && \
-#     dnf -y install acl \
-#     git-core \
-#     git-lfs \
-#     glibc-langpack-en \
-#     krb5-workstation \
-#     nginx \
-#     postgresql \
-#     python3-devel \
-#     python3-libselinux \
-#     python3-pip \
-#     python3-psycopg2 \
-#     python3-setuptools \
-#     rsync \
-#     "rsyslog >= 8.1911.0" \
-#     subversion \
-#     sudo \
-#     vim-minimal \
-#     which \
-#     unzip \
-#     xmlsec1-openssl \
-#     xmlsec1-devel \
-#     xmlsec1-openssl-devel && \
-#     dnf -y clean all
-
-# RUN dnf -y update && dnf install -y 'dnf-command(config-manager)' && \
-#     dnf config-manager --set-enabled crb && \
-#     dnf -y install \
-#     cargo \
-#     gcc \
-#     gcc-c++ \
-#     git-core \
-#     gettext \
-#     glibc-langpack-en \
-#   	krb5-devel \
-#     libffi-devel \
-#     libtool-ltdl-devel \
-#     make \
-#     nss \
-#     openssl-devel \
-#     openldap-devel \
-#     patch \
-#     python3-devel \
-# 	  python3-gssapi \
-#     python3-pip \
-#     python3-psycopg2 \
-#     python3-setuptools \
-#     swig \
-#     unzip \
-#     xmlsec1-devel \
-#     xmlsec1-openssl-devel
-# RUN pip3 install -U pip && python3 -m pip install -U pip setuptools && python3 -m pip install -U pip setuptools-rust
 
 WORKDIR /
 RUN rm -rf $REMOTE_SOURCE_DIR
