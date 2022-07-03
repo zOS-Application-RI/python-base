@@ -7,9 +7,9 @@ on:
       - 'main'
     tags:
       - 'v*'
-  pull_request:
-    branches:
-      - 'main'
+  # pull_request:
+  #   branches:
+  #     - 'main'
 
 jobs:
   docker:
@@ -79,6 +79,7 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:latest, 
                 ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:v1,
                 ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.prep.outputs.BUILD_ID }}
+                ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:buildcache,mode=max
