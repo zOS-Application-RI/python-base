@@ -64,7 +64,7 @@ RUN dnf -y update && dnf install -y 'dnf-command(config-manager)' && \
 #  xmlsec1-openssl \
 #  xmlsec1-devel \
 #  xmlsec1-openssl-devel \
-  && dnf install -y --allowerasing libcurl libcurl-devel openssl-devel libxml2 libxml2-devel \
+  && dnf install -y --allowerasing libcurl libcurl-devel openssl-devel libxml2 libxml2-devel libxslt libxslt-devel \
   && dnf clean all \
   && rm -rf /var/cache/{dnf,yum} \
   && rm -rf /var/lib/dnf/history.* \
